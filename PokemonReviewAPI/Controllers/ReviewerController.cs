@@ -12,6 +12,7 @@ namespace PokemonReviewAPI.Controllers
     public class ReviewerController : Controller     
     {
         private readonly IReviewerRepository _reviewerRepository;
+        private readonly IReviewRepository _reviewRepository;
         private readonly IMapper _mapper;
 
         public ReviewerController(IReviewerRepository reviewerRepository, IMapper mapper)
@@ -52,7 +53,7 @@ namespace PokemonReviewAPI.Controllers
         [ProducesResponseType(200, Type = typeof(Review))]
         [ProducesResponseType(400)]
 
-        public IActionResult GetReviewsByReviewer(int reviewerId)
+        public IActionResult GetReviewsByAReviewer(int reviewerId)
         {
             if (!_reviewerRepository.ReviewerExists(reviewerId))
                 return NotFound();
@@ -61,6 +62,7 @@ namespace PokemonReviewAPI.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
             return Ok(reviews);
         }
 
@@ -121,6 +123,37 @@ namespace PokemonReviewAPI.Controllers
             {
                 ModelState.AddModelError("", "Something went wrong updating the reviewer");
                 return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{reviewerId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+
+        public IActionResult DeleteReviewer(int reviewerId)
+        {
+            if (!_reviewerRepository.ReviewerExists(reviewerId))
+            {
+                return NotFound(); 
+            }
+
+            var reviewsToDelete = _reviewerRepository.GetReviewsByReviewer(reviewerId);
+            var reviewerToDelete = _reviewerRepository.GetReviewer(reviewerId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState); 
+
+            /* if (!_reviewRepository.DeleteReviews(reviewsToDelete.ToList()))
+            {
+                ModelState.AddModelError("", "Something went wrong deleting the reviews");
+            } */
+
+            if (!_reviewerRepository.DeleteReviewer(reviewerToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong deleting the reviewer");
             }
 
             return NoContent();

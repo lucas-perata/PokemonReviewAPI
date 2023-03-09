@@ -51,5 +51,11 @@ namespace PokemonReviewAPI.Repository
             _context.Update(reviewer);
             return Save();
         }
+
+        public bool DeleteReviewer(Reviewer reviewer)
+        {
+            _context.Remove(reviewer);
+            return Save();
+        }
     }
 }
