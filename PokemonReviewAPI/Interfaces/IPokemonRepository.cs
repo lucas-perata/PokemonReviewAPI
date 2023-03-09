@@ -14,6 +14,8 @@ namespace PokemonReviewAPI.Interfaces
 
         bool UpdatePokemon(int ownerId, int categoryId, Pokemon pokemon);
 
+        bool DeletePokemon(Pokemon pokemon);
+
         bool Save();
     }
 }
